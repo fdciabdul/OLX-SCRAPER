@@ -3,5 +3,27 @@
     "axios": "^1.6.2",
     "cheerio": "^1.0.0-rc.12",
     "geoip-lite": "^1.4.8"
-  }
+  },
+  "name": "olx-scraper",
+  "description": "<h1 align=\"center\">",
+  "version": "1.0.0",
+  "main": "./src/main.class.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fdciabdul/OLX-SCRAPER.git"
+  },
+  "keywords": [
+    "olx",
+    "scraper"
+  ],
+  "author": "Abdul Muttaqin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fdciabdul/OLX-SCRAPER/issues"
+  },
+  "homepage": "https://github.com/fdciabdul/OLX-SCRAPER#readme"
 }
