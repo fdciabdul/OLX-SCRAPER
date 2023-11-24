@@ -6,7 +6,7 @@
   },
   "name": "olx-scraper",
   "description": "Unofficial OLX Client API / Scraper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "./src/main.class.js",
   "devDependencies": {},
   "scripts": {
