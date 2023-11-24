@@ -128,7 +128,7 @@ class OLXClient {
      * @returns {Promise<Object>} A promise that resolves to the search results.
      * @throws {Error} Throws an error if search fails.
      */
-    async searchCategory(categoryId, locationId) {
+    async searchbyCategory(categoryId, locationId) {
         const params = {
             category: categoryId,
             facet_limit: 100,
