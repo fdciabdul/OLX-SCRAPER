@@ -30,6 +30,66 @@ yarn add olx-scraper
 ```
 ## Usage
 
+### Logging in
+
+To log in to OLX:
+
 ```javascript
 const { OLXClient } = require("olx-scraper");
+const client = new OLXClient('your-email@example.com', 'your-password');
+
+client.loginOLX().then(response => {
+    console.log(response);
+}).catch(error => {
+    console.error(error);
+});
 ```
+
+### Fetching User Data
+
+Retrieve user data from OLX by user ID:
+
+```javascript
+client.getUserData(userId, cookie).then(userData => {
+    console.log(userData);
+}).catch(error => {
+    console.error(error);
+});
+```
+
+### Getting Categories
+
+Get a list of categories available on OLX:
+
+```javascript
+client.getCategory().then(categories => {
+    console.log(categories);
+}).catch(error => {
+    console.error(error);
+});
+```
+
+### Searching by Category
+
+Search for listings in a specific category:
+
+```javascript
+client.searchbyCategory(categoryId, locationId).then(searchResults => {
+    console.log(searchResults);
+}).catch(error => {
+    console.error(error);
+});
+```
+
+### Searching for Locations
+
+Search for locations on OLX:
+
+```javascript
+client.searchLocation('location-query').then(locations => {
+    console.log(locations);
+}).catch(error => {
+    console.error(error);
+});
+```
+
