@@ -171,7 +171,7 @@ class OLXClient {
       );
       return {
         status: true,
-        data: data,
+        data: data.data,
       };
     } catch (error) {
       return {
