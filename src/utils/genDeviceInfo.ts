@@ -1,7 +1,6 @@
-const { getState } = require("./getState");
-
+import { getState } from "./getState";
 async function generateDeviceInfo() {
-    const data = await getState();
+    const data:any = await getState();
     const loginDetails = {
         cityName: data.city,
         state: data.state,
@@ -15,6 +14,4 @@ async function generateDeviceInfo() {
 }
 
 
-module.exports = {
-    generateDeviceInfo
-}
+export { generateDeviceInfo }

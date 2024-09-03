@@ -1,10 +1,10 @@
-const axios = require('axios');
-const { BASE_URL,REGEX_CATEGORY } = require('../constant');
+import axios from 'axios';
+import {CONFIG} from '../constant';
 
-async function getState() {
+export async function getState() {
     try {
-        const response = await axios.get(BASE_URL);
-        const regex = REGEX_CATEGORY;
+        const response = await axios.get(CONFIG.BASE_URL);
+        const regex = CONFIG.REGEX_CATEGORY;
 
         const match = response.data.match(regex);
         let state;
@@ -22,8 +22,4 @@ async function getState() {
         console.error('Error fetching or parsing URL:', error);
         return [];
     }
-}
-
-module.exports = {
-    getState
 }

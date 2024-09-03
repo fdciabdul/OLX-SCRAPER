@@ -1,56 +1,36 @@
-const axios = require("axios");
-const { BASE_URL, PANAMERA_CLIENT } = require("./constant");
-const { generateDeviceInfo } = require("./utils/genDeviceInfo");
-const cookieBuilder = require("./utils/cookieBuilder");
-const { load } = require("cheerio");
-
+import { buildHeaders } from "./utils/header";
+import axios, { type AxiosResponse } from "axios";
+import {CONFIG} from "./constant";
+import { generateDeviceInfo } from "./utils/genDeviceInfo";
+import cookieBuilder from "./utils/cookieBuilder";
+import { load } from "cheerio";
+import type {CategoryLink, CategoryResponse, LoginResponse, SearchCategoryResponse, SearchLocationResponse, UserDataResponse, } from "./interfaces";
 class OLXClient {
+  user: string;
+  baseUrl: string;
+  password: string;
+
   /**
    * Create an OLX client.
    * Author: fdciabdul
    * @param {string} email - The username for OLX.
    * @param {string} password - The password for OLX.
    */
-  constructor(email, password) {
+  constructor(email: string, password: string) {
     this.user = email;
     this.password = password;
-    this.baseUrl = BASE_URL;
-  }
-
-  /**
-   * Build headers for HTTP requests.
-   * Author: fdciabdul
-   * @param {string} [referrer=this.baseUrl] - The referrer URL.
-   * @returns {Object} The headers object.
-   */
-  buildHeaders(referrer = this.baseUrl) {
-    return {
-      accept: "*/*",
-      "accept-language":
-        "en-US,en;q=0.9,es-ES;q=0.8,es;q=0.7,id-ID;q=0.6,id;q=0.5,zh-CN;q=0.4,zh;q=0.3",
-      "content-type": "application/json",
-      "sec-ch-ua": '"Chromium";v="117", "Not;A=Brand";v="8"',
-      "sec-ch-ua-mobile": "?0",
-      "sec-ch-ua-platform": '"Windows"',
-      "sec-fetch-dest": "empty",
-      "sec-fetch-mode": "cors",
-      "sec-fetch-site": "same-origin",
-      "x-panamera-client-id": PANAMERA_CLIENT,
-      Referer: referrer,
-      "Referrer-Policy": "no-referrer-when-downgrade",
-    };
+    this.baseUrl = CONFIG.BASE_URL;
   }
 
   /**
    * Log in to OLX.
    * Author: fdciabdul
-   * @returns {Promise<Object>} A promise that resolves to the login response.
+   * @returns {Promise<LoginResponse>} A promise that resolves to the login response.
    * @throws {Error} Throws an error if login fails.
    */
-  async loginOLX() {
+  async loginOLX(): Promise<LoginResponse> {
     try {
-      console.log(this.user, this.password);
-      const response = await axios.post(
+      const response: AxiosResponse = await axios.post(
         `${this.baseUrl}/api/auth/authenticate/login`,
         {
           grantType: "email",
@@ -60,7 +40,7 @@ class OLXClient {
           metadata: { deviceInfo: generateDeviceInfo() },
         },
         {
-          headers: this.buildHeaders(),
+          headers: buildHeaders(this.baseUrl),
         }
       );
       const { accessToken, refreshToken, user, chatToken, notificationHubId } =
@@ -73,11 +53,11 @@ class OLXClient {
         notificationHubId
       );
       return {
-        statu: true,
+        status: true,
         message: "Login Success",
         cookie: cookie,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: false,
         message: error.message,
@@ -90,20 +70,23 @@ class OLXClient {
    * Author: fdciabdul
    * @param {string} userId - The user ID.
    * @param {string} cookie - The cookie obtained after login.
-   * @returns {Promise<Object>} A promise that resolves to user data.
+   * @returns {Promise<UserDataResponse>} A promise that resolves to user data.
    * @throws {Error} Throws an error if fetching user data fails.
    */
-  async getUserData(userId, cookie) {
+  async getUserData(userId: any, cookie: any): Promise<UserDataResponse> {
     try {
-      const response = await axios.get(`${this.baseUrl}/api/users/${userId}`, {
-        headers: {
-          Cookie: cookie,
-          ...this.buildHeaders(),
-        },
-      });
+      const response: AxiosResponse = await axios.get(
+        `${this.baseUrl}/api/users/${userId}`,
+        {
+          headers: {
+            Cookie: cookie,
+            ...buildHeaders(this.baseUrl),
+          },
+        }
+      );
 
-      return response.data;
-    } catch (error) {
+      return { status: true, data: response.data };
+    } catch (error: any) {
       return {
         status: false,
         message: error.message,
@@ -114,14 +97,14 @@ class OLXClient {
   /**
    * Get categories from OLX.
    * Author: fdciabdul
-   * @returns {Promise<Array>} A promise that resolves to an array of category links.
+   * @returns {Promise<CategoryResponse>} A promise that resolves to an array of category links.
    */
-  async getCategory() {
+  async getCategory(): Promise<CategoryResponse> {
     try {
-      const response = await axios.get(this.baseUrl);
+      const response: AxiosResponse = await axios.get(this.baseUrl);
 
       const $ = load(response.data);
-      const links = [];
+      const links: CategoryLink[] = [];
 
       $("a").each((index, element) => {
         const href = $(element).attr("href");
@@ -138,7 +121,7 @@ class OLXClient {
         status: true,
         data: links,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: false,
         message: error.message,
@@ -151,10 +134,15 @@ class OLXClient {
    * Author: fdciabdul
    * @param {number} categoryId - The ID of the category to search.
    * @param {number} locationId - The ID of the location to search in.
-   * @returns {Promise<Object>} A promise that resolves to the search results.
+   * @param {number} [page=0] - The page number for pagination.
+   * @returns {Promise<SearchCategoryResponse>} A promise that resolves to the search results.
    * @throws {Error} Throws an error if search fails.
    */
-  async searchbyCategory(categoryId, locationId,page=0) {
+  async searchbyCategory(
+    categoryId: number,
+    locationId: number,
+    page: number = 0
+  ): Promise<SearchCategoryResponse> {
     const params = {
       category: categoryId,
       facet_limit: 100,
@@ -162,7 +150,7 @@ class OLXClient {
       location_facet_limit: 20,
       platform: "web-desktop",
       relaxedFilters: true,
-      page
+      page,
     };
 
     try {
@@ -174,7 +162,7 @@ class OLXClient {
         status: true,
         data: data.data,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: false,
         message: error.message,
@@ -186,10 +174,10 @@ class OLXClient {
    * Search for locations on OLX.
    * Author: fdciabdul
    * @param {string} query - The search query for location.
-   * @returns {Promise<Object>} A promise that resolves to location search results.
+   * @returns {Promise<SearchLocationResponse>} A promise that resolves to location search results.
    * @throws {Error} Throws an error if location search fails.
    */
-  async searchLocation(query) {
+  async searchLocation(query: string): Promise<SearchLocationResponse> {
     const params = {
       input: query,
       limit: 5,
@@ -205,8 +193,13 @@ class OLXClient {
           status: true,
           location: data.data.suggestions,
         };
+      } else {
+        return {
+          status: false,
+          message: 'No data found',
+        };
       }
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: false,
         message: error.message,
@@ -215,6 +208,4 @@ class OLXClient {
   }
 }
 
-module.exports = {
-  OLXClient,
-};
+export default OLXClient;

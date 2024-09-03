@@ -4,13 +4,20 @@
     "cheerio": "^1.0.0-rc.12",
     "geoip-lite": "^1.4.8"
   },
+  "type": "module",
   "name": "olx-scraper",
   "description": "Unofficial OLX Client API / Scraper",
   "version": "1.0.2",
   "main": "./src/main.class.js",
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/node": "^22.5.2",
+    "@types/bun": "latest",
+    "typescript": "^5.5.3"
+  },
   "scripts": {
-    "test": "jest"
+    "start": "tsc && node dist/main.js",
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -25,5 +32,8 @@
   "bugs": {
     "url": "https://github.com/fdciabdul/OLX-SCRAPER/issues"
   },
-  "homepage": "https://github.com/fdciabdul/OLX-SCRAPER#readme"
+  "homepage": "https://github.com/fdciabdul/OLX-SCRAPER#readme",
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
 }
