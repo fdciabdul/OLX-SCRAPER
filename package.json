@@ -16,6 +16,7 @@
   },
   "scripts": {
     "start": "tsc && node dist/main.js",
+    "dev": "tsx src/tes.ts",
     "build": "tsc",
     "prepublishOnly": "npm run build"
   },
